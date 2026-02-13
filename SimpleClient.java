@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -16,30 +17,11 @@ public class SimpleClient {
         try {
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(new URI(URL))
+                    .uri(URI.create(URL))
                     .GET()
                     .build();
 
-            // "Simulate opening tabs" = just make multiple HTTP requests
-            for (int tab = 1; tab <= TAB_COUNT; tab++) {
-                HttpResponse<String> response =
-                        client.send(request, HttpResponse.BodyHandlers.ofString());
-
-                System.out.println("\n========================================");
-                System.out.println("TAB " + tab + " -> " + URL);
-                System.out.println("Status Code: " + response.statusCode());
-                System.out.println("========================================\n");
-
-                String body = response.body();
-
-                if (PRINT_RAW_HTML) {
-                    System.out.println("---- Raw HTML ----\n");
-                    System.out.println(body);
-                } else {
-                    System.out.println("---- Rendered (Terminal) ----\n");
-                    System.out.println(renderToTerminalText(body));
-                }
-            }
+            simulateTabs(1, client, request);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -54,5 +36,37 @@ public class SimpleClient {
                 .replaceAll("<[^>]*>", " ")
                 .replaceAll("\\s+", " ")
                 .trim();
+    }
+
+    // Recursive version of the "open tabs" loop
+    private static void simulateTabs(int tab, HttpClient client, HttpRequest request)
+            throws IOException, InterruptedException {
+
+        // Base case: stop after TAB_COUNT
+        if (tab > TAB_COUNT) {
+            return;
+        }
+
+        // Do one request (one "tab")
+        HttpResponse<String> response =
+                client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        System.out.println("\n========================================");
+        System.out.println("TAB " + tab + " -> " + URL);
+        System.out.println("Status Code: " + response.statusCode());
+        System.out.println("========================================\n");
+
+        String body = response.body();
+
+        if (PRINT_RAW_HTML) {
+            System.out.println("---- Raw HTML ----\n");
+            System.out.println(body);
+        } else {
+            System.out.println("---- Rendered (Terminal) ----\n");
+            System.out.println(renderToTerminalText(body));
+        }
+
+        // Recursive call: next tab
+        simulateTabs(tab + 1, client, request);
     }
 }
