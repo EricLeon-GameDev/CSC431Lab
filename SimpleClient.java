@@ -7,7 +7,7 @@ import java.net.http.HttpResponse;
 public class SimpleClient {
 
     // Change these if needed
-    private static final String URL = "http://localhost:8000/";
+    private static final String URL = "http://10.0.101.74:8000/";
     private static final int TAB_COUNT = 50000; // Change this to simulate opening more/fewer tabs
 
     // true = print raw HTML, false = print "rendered" text (tags stripped)

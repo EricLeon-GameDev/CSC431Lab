@@ -24,7 +24,7 @@ public class SimpleWebServer {
         // Start the server
         server.setExecutor(null); // Creates a default executor
         server.start();
-        System.out.println("Server is running on http://localhost:8000/");
+        System.out.println("Server is running on http://10.0.101.74:8000/");
     }
 
     // Handler to process incoming HTTP requests
